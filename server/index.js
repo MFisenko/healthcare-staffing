@@ -13,10 +13,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors());
 app.use(express.json());
 
+const port = Number(process.env.SMTP_PORT) || 465;
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
+  port,
+  secure: port === 465,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -34,7 +35,7 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: `"HealLink Careers" <${process.env.SMTP_USER}>`,
+      from: `"HealLink Careers" <${process.env.FROM_EMAIL}>`,
       to: process.env.RECIPIENT_EMAIL,
       replyTo: email,
       subject: `New CV Application — ${name}`,
@@ -71,7 +72,7 @@ app.post('/api/request-staff', async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: `"HealLink Staffing" <${process.env.SMTP_USER}>`,
+      from: `"HealLink Staffing" <${process.env.FROM_EMAIL}>`,
       to: process.env.RECIPIENT_EMAIL,
       replyTo: email,
       subject: `Staff Request — ${orgName} (${roleType})`,
