@@ -1,28 +1,18 @@
 import { fileURLToPath } from 'url';
 import express from 'express';
 import multer from 'multer';
-import nodemailer from 'nodemailer';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { Resend } from 'resend';
 
 dotenv.config();
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.use(cors());
 app.use(express.json());
-
-const port = Number(process.env.SMTP_PORT) || 465;
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port,
-  secure: port === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
 
 // Tab 1 — Candidate applies with CV
 app.post('/api/apply', upload.single('cv'), async (req, res) => {
@@ -34,8 +24,8 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
   }
 
   try {
-    await transporter.sendMail({
-      from: `"HealLink Careers" <${process.env.FROM_EMAIL}>`,
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
       to: process.env.RECIPIENT_EMAIL,
       replyTo: email,
       subject: `New CV Application — ${name}`,
@@ -50,15 +40,14 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
         {
           filename: cvFile.originalname,
           content: cvFile.buffer,
-          contentType: cvFile.mimetype,
         },
       ],
     });
 
     res.json({ success: true });
   } catch (err) {
-    console.error('Mail error:', err.message);
-    res.status(500).json({ error: 'Failed to send email. Check your SMTP settings.' });
+    console.error('Resend error:', err.message);
+    res.status(500).json({ error: 'Failed to send email.' });
   }
 });
 
@@ -71,8 +60,8 @@ app.post('/api/request-staff', async (req, res) => {
   }
 
   try {
-    await transporter.sendMail({
-      from: `"HealLink Staffing" <${process.env.FROM_EMAIL}>`,
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
       to: process.env.RECIPIENT_EMAIL,
       replyTo: email,
       subject: `Staff Request — ${orgName} (${roleType})`,
@@ -91,13 +80,11 @@ app.post('/api/request-staff', async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error('Mail error:', err.message);
-    res.status(500).json({ error: 'Failed to send email. Check your SMTP settings.' });
+    console.error('Resend error:', err.message);
+    res.status(500).json({ error: 'Failed to send email.' });
   }
 });
 
-// Only start the HTTP server when run directly (local dev).
-// When imported by Vercel (api/index.js), we just export the app.
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
   const PORT = process.env.PORT || 3001;
