@@ -14,6 +14,20 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 app.use(cors());
 app.use(express.json());
 
+async function sendAutoReply(to, subject, html) {
+  try {
+    const result = await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      to,
+      subject,
+      html,
+    });
+    console.log('Auto-reply sent to', to, result);
+  } catch (err) {
+    console.error('Auto-reply failed to', to, err.message);
+  }
+}
+
 // Tab 1 — Candidate applies with CV
 app.post('/api/apply', upload.single('cv'), async (req, res) => {
   const { name, email, phone, message } = req.body;
@@ -39,25 +53,22 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
       attachments: [{ filename: cvFile.originalname, content: cvFile.buffer }],
     });
 
-    await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: email,
-      subject: 'We received your application — Tender Smiles Healthcare Staffing',
-      html: `
-        <p>Hi ${name},</p>
-        <p>Thank you for applying to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your application and CV and will review it shortly.</p>
-        <p>A member of our team will be in touch with you soon.</p>
-        <br/>
-        <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
-        <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>
-      `,
-    });
-
     res.json({ success: true });
   } catch (err) {
     console.error('Resend error:', err.message);
-    res.status(500).json({ error: 'Failed to send email.' });
+    return res.status(500).json({ error: 'Failed to send email.' });
   }
+
+  await sendAutoReply(
+    email,
+    'We received your application — Tender Smiles Healthcare Staffing',
+    `<p>Hi ${name},</p>
+     <p>Thank you for applying to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your application and CV and will review it shortly.</p>
+     <p>A member of our team will be in touch with you soon.</p>
+     <br/>
+     <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
+     <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>`
+  );
 });
 
 // Tab 2 — Caregiver request
@@ -89,25 +100,22 @@ app.post('/api/request-staff', async (req, res) => {
       `,
     });
 
-    await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
-      to: email,
-      subject: 'We received your request — Tender Smiles Healthcare Staffing',
-      html: `
-        <p>Hi ${firstName},</p>
-        <p>Thank you for reaching out to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your caregiver request and will match you with a qualified professional as soon as possible.</p>
-        <p>A member of our team will be in touch with you shortly to discuss next steps.</p>
-        <br/>
-        <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
-        <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>
-      `,
-    });
-
     res.json({ success: true });
   } catch (err) {
     console.error('Resend error:', err.message);
-    res.status(500).json({ error: 'Failed to send email.' });
+    return res.status(500).json({ error: 'Failed to send email.' });
   }
+
+  await sendAutoReply(
+    email,
+    'We received your request — Tender Smiles Healthcare Staffing',
+    `<p>Hi ${firstName},</p>
+     <p>Thank you for reaching out to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your caregiver request and will match you with a qualified professional as soon as possible.</p>
+     <p>A member of our team will be in touch with you shortly to discuss next steps.</p>
+     <br/>
+     <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
+     <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>`
+  );
 });
 
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
