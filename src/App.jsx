@@ -507,7 +507,7 @@ export default function App() {
             <div className="hidden lg:flex items-center justify-center py-8">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full" style={{ height: 400 }}>
                 <img
-                  src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&q=80&auto=format&fit=crop"
                   alt="Tender Smiles healthcare professionals"
                   className="w-full h-full object-cover object-center"
                 />
@@ -548,7 +548,7 @@ export default function App() {
             <div className="relative">
               <div className="absolute -top-6 -left-6 w-40 h-40 rounded-full bg-primary-fixed/50 blur-3xl pointer-events-none" />
               <img
-                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop"
                 alt="Tender Smiles nursing team"
                 className="relative rounded-2xl shadow-[0_16px_48px_-8px_rgba(83,44,216,0.18)] w-full object-cover aspect-[4/3]"
               />
@@ -676,7 +676,7 @@ export default function App() {
               </div>
 
               <img
-                src="https://images.unsplash.com/photo-1584820927498-cad076eee68c?w=800&q=80&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80&auto=format&fit=crop"
                 alt="Smiling healthcare professional"
                 className="w-full rounded-xl object-cover shadow-sm"
                 style={{ height: 180 }}
