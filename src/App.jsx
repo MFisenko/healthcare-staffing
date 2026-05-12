@@ -1,11 +1,19 @@
 import { useState, useRef } from 'react';
 
+function WhatsAppIcon({ className = '' }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+    </svg>
+  );
+}
+
 // ─── Static data ───────────────────────────────────────────────────
 const SERVICES = [
-  { icon: 'schedule',          title: 'Temporary Staffing',    accent: 'bg-primary-fixed text-primary',   body: 'When unexpected staffing gaps arise, trust Tender Smiles Healthcare Staffing to provide the right professionals at the right time.' },
-  { icon: 'handshake',         title: 'Direct Hire Placement', accent: 'bg-secondary-fixed text-secondary', body: "We carefully match candidates with your organization's values and culture, ensuring they seamlessly integrate into your team." },
-  { icon: 'calendar_today',    title: 'Per Diem Staffing',     accent: 'bg-primary-fixed text-primary',   body: 'Our per diem staffing service offers the flexibility you need to maintain optimal staffing levels — during peak periods, emergencies, or short-term assignments.' },
-  { icon: 'medical_information', title: 'Locum Tenens',        accent: 'bg-secondary-fixed text-secondary', body: 'Maintain continuity of care with our locum tenens service. When your facility needs temporary coverage for physicians or other healthcare professionals, we are here to help.' },
+  { icon: 'schedule',            title: 'Temporary Staffing',    accent: 'bg-primary-fixed text-primary',     body: 'When unexpected staffing gaps arise, trust Tender Smiles Healthcare Staffing to provide the right professionals at the right time.' },
+  { icon: 'handshake',           title: 'Direct Hire Placement', accent: 'bg-secondary-fixed text-secondary', body: "We carefully match candidates with your organization's values and culture, ensuring they seamlessly integrate into your team." },
+  { icon: 'calendar_today',      title: 'Per Diem Staffing',     accent: 'bg-primary-fixed text-primary',     body: 'Our per diem staffing service offers the flexibility you need to maintain optimal staffing levels — during peak periods, emergencies, or short-term assignments.' },
+  { icon: 'medical_information', title: 'Locum Tenens',          accent: 'bg-secondary-fixed text-secondary', body: 'Maintain continuity of care with our locum tenens service. When your facility needs temporary coverage for physicians or other healthcare professionals, we are here to help.' },
 ];
 
 const WHY = [
@@ -18,10 +26,29 @@ const STATS = [
   { value: '24/7',  label: 'Day Services' },
   { value: '100%',  label: 'Screened Professionals' },
   { value: '< 24h', label: 'Average Placement' },
-  { value: 'Local', label: 'Nationwide Reach' },
+  { value: 'Local', label: 'Within the US' },
 ];
 
-const ROLE_OPTIONS = ['Registered Nurse (RN)', 'Licensed Practical Nurse (LPN)', 'Certified Nursing Assistant (CNA)', 'Physician / Locum Tenens', 'Medical Assistant', 'Allied Health Professional', 'Other'];
+const ROLE_OPTIONS = [
+  'Registered Nurse (RN)',
+  'Licensed Practical Nurse (LPN)',
+  'Certified Nursing Assistant (CNA)',
+  'Physician / Locum Tenens',
+  'Medical Assistant',
+  'Allied Health Professional',
+  'Homecare Specialist',
+  'DSP (Direct Support Professional)',
+  'Homecare Aid',
+  'Others',
+];
+
+const SERVICE_DURATION_OPTIONS = [
+  '1 Day', 'A Few Days', '1 Week', '2 Weeks', '1 Month', '3 Months', '6 Months or More',
+];
+
+const PURPOSE_OPTIONS = [
+  'Family member', 'Loved one', 'Neighbour', 'Personal care',
+];
 
 // ─── Validation helpers ────────────────────────────────────────────
 const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -32,6 +59,7 @@ const STATES = { idle: 'idle', loading: 'loading', success: 'success', error: 'e
 
 const baseCls = 'w-full px-4 py-2.5 rounded-xl border bg-white text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm';
 const inputCls = (err) => `${baseCls} ${err ? 'border-error focus:border-error focus:ring-error/20' : 'border-outline-variant focus:border-primary'}`;
+const selCls   = (err) => `${baseCls} cursor-pointer ${err ? 'border-error focus:border-error focus:ring-error/20' : 'border-outline-variant focus:border-primary'}`;
 
 function FieldError({ msg }) {
   if (!msg) return null;
@@ -118,10 +146,10 @@ function CandidateForm() {
   };
 
   function validateField(name, value) {
-    if (name === 'name'  && !value.trim())  return 'Full name is required.';
-    if (name === 'email' && !value.trim())  return 'Email address is required.';
+    if (name === 'name'  && !value.trim())   return 'Full name is required.';
+    if (name === 'email' && !value.trim())   return 'Email address is required.';
     if (name === 'email' && !isEmail(value)) return 'Please enter a valid email address.';
-    if (name === 'phone' && !value.trim())  return 'Phone number is required.';
+    if (name === 'phone' && !value.trim())   return 'Phone number is required.';
     if (name === 'phone' && !isPhone(value)) return 'Please enter a valid phone number.';
     return '';
   }
@@ -217,9 +245,12 @@ function CandidateForm() {
   );
 }
 
-// ─── Agency form ───────────────────────────────────────────────────
+// ─── Caregiver request form ────────────────────────────────────────
 function AgencyForm() {
-  const [form, setForm]     = useState({ orgName: '', contactName: '', email: '', phone: '', roleType: '', headcount: '', startDate: '', requirements: '' });
+  const [form, setForm] = useState({
+    firstName: '', lastName: '', address: '', phone: '', email: '',
+    organisation: '', roleType: '', purpose: '', serviceDuration: '', startDate: '', requirements: '',
+  });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(STATES.idle);
   const [serverErr, setServerErr] = useState('');
@@ -237,25 +268,23 @@ function AgencyForm() {
   };
 
   function validateField(name, value) {
-    if (name === 'orgName'     && !value.trim())  return 'Organisation name is required.';
-    if (name === 'contactName' && !value.trim())  return 'Your name is required.';
-    if (name === 'email'       && !value.trim())  return 'Email address is required.';
-    if (name === 'email'       && !isEmail(value)) return 'Please enter a valid email address.';
-    if (name === 'roleType'    && !value)         return 'Please select the role you need.';
-    if (name === 'headcount'   && value && (isNaN(value) || Number(value) < 1)) return 'Please enter a valid number.';
+    if (name === 'firstName' && !value.trim())              return 'First name is required.';
+    if (name === 'lastName'  && !value.trim())              return 'Last name is required.';
+    if (name === 'address'   && !value.trim())              return 'Address is required.';
+    if (name === 'phone'     && !value.trim())              return 'Phone number is required.';
+    if (name === 'phone'     && value.trim() && !isPhone(value)) return 'Please enter a valid phone number.';
+    if (name === 'email'     && !value.trim())              return 'Email address is required.';
+    if (name === 'email'     && value.trim() && !isEmail(value)) return 'Please enter a valid email address.';
+    if (name === 'roleType'  && !value)                     return 'Please select the role you need.';
     return '';
   }
 
   function validate() {
     const errs = {};
-    ['orgName', 'contactName', 'email', 'roleType'].forEach(k => {
+    ['firstName', 'lastName', 'address', 'phone', 'email', 'roleType'].forEach(k => {
       const e = validateField(k, form[k]);
       if (e) errs[k] = e;
     });
-    if (form.headcount) {
-      const e = validateField('headcount', form.headcount);
-      if (e) errs.headcount = e;
-    }
     return errs;
   }
 
@@ -275,48 +304,69 @@ function AgencyForm() {
   }
 
   if (status === STATES.success) return (
-    <SuccessCard title="Request received!" body="Our team will match you with available professionals and follow up shortly."
-      onReset={() => { setStatus(STATES.idle); setForm({ orgName: '', contactName: '', email: '', phone: '', roleType: '', headcount: '', startDate: '', requirements: '' }); setErrors({}); }} />
+    <SuccessCard title="Request received!" body="Our team will match you with available caregivers and follow up shortly."
+      onReset={() => {
+        setStatus(STATES.idle);
+        setForm({ firstName: '', lastName: '', address: '', phone: '', email: '', organisation: '', roleType: '', purpose: '', serviceDuration: '', startDate: '', requirements: '' });
+        setErrors({});
+      }} />
   );
-
-  const sel = (name, err) => `${baseCls} cursor-pointer ${err ? 'border-error focus:border-error focus:ring-error/20' : 'border-outline-variant focus:border-primary'}`;
 
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Organisation name" required error={errors.orgName}>
-          <input className={inputCls(errors.orgName)} name="orgName" type="text" placeholder="Metro General Hospital"
-            value={form.orgName} onChange={onChange} onBlur={onBlur} />
+        <Field label="First name" required error={errors.firstName}>
+          <input className={inputCls(errors.firstName)} name="firstName" type="text" placeholder="Jane"
+            value={form.firstName} onChange={onChange} onBlur={onBlur} />
         </Field>
-        <Field label="Your name" required error={errors.contactName}>
-          <input className={inputCls(errors.contactName)} name="contactName" type="text" placeholder="Dr. Sarah Jenkins"
-            value={form.contactName} onChange={onChange} onBlur={onBlur} />
+        <Field label="Last name" required error={errors.lastName}>
+          <input className={inputCls(errors.lastName)} name="lastName" type="text" placeholder="Smith"
+            value={form.lastName} onChange={onChange} onBlur={onBlur} />
         </Field>
       </div>
 
+      <Field label="Address" required error={errors.address}>
+        <input className={inputCls(errors.address)} name="address" type="text" placeholder="123 Main St, City, State"
+          value={form.address} onChange={onChange} onBlur={onBlur} />
+      </Field>
+
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Email address" required error={errors.email}>
-          <input className={inputCls(errors.email)} name="email" type="email" placeholder="sarah@hospital.com"
-            value={form.email} onChange={onChange} onBlur={onBlur} />
-        </Field>
-        <Field label="Phone" error={errors.phone}>
+        <Field label="Phone number" required error={errors.phone}>
           <input className={inputCls(errors.phone)} name="phone" type="tel" placeholder="(443) 000-0000"
             value={form.phone} onChange={onChange} onBlur={onBlur} />
         </Field>
+        <Field label="Email address" required error={errors.email}>
+          <input className={inputCls(errors.email)} name="email" type="email" placeholder="jane@example.com"
+            value={form.email} onChange={onChange} onBlur={onBlur} />
+        </Field>
       </div>
+
+      <Field label="Organisation" error={errors.organisation}>
+        <input className={inputCls(false)} name="organisation" type="text" placeholder="Organisation name (if applicable)"
+          value={form.organisation} onChange={onChange} />
+      </Field>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label="Role needed" required error={errors.roleType}>
-          <select className={sel('roleType', errors.roleType)} name="roleType" value={form.roleType} onChange={onChange} onBlur={onBlur}>
+          <select className={selCls(errors.roleType)} name="roleType" value={form.roleType} onChange={onChange} onBlur={onBlur}>
             <option value="">Select a role…</option>
             {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </Field>
-        <Field label="Headcount" error={errors.headcount}>
-          <input className={inputCls(errors.headcount)} name="headcount" type="number" min="1" placeholder="e.g. 3"
-            value={form.headcount} onChange={onChange} onBlur={onBlur} />
+        <Field label="Purpose" error={errors.purpose}>
+          <select className={selCls(false)} name="purpose" value={form.purpose} onChange={onChange}>
+            <option value="">Select purpose…</option>
+            {PURPOSE_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
         </Field>
       </div>
+
+      <Field label="Service duration">
+        <select className={selCls(false)} name="serviceDuration" value={form.serviceDuration} onChange={onChange}>
+          <option value="">How long do you need this service?</option>
+          {SERVICE_DURATION_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
+      </Field>
 
       <Field label="Desired start date">
         <input className={inputCls(false)} name="startDate" type="date" value={form.startDate} onChange={onChange} />
@@ -329,7 +379,7 @@ function AgencyForm() {
       </Field>
 
       <ServerError msg={serverErr} />
-      <SubmitButton loading={status === STATES.loading} label="Request Staff" />
+      <SubmitButton loading={status === STATES.loading} label="Request a Caregiver" />
     </form>
   );
 }
@@ -337,6 +387,9 @@ function AgencyForm() {
 // ─── Page ──────────────────────────────────────────────────────────
 export default function App() {
   const [activeTab, setActiveTab] = useState('candidate');
+  const [menuOpen, setMenuOpen]   = useState(false);
+
+  const navLinks = [['#about','About'],['#services','Services'],['#why','Why Us'],['#contact','Contact']];
 
   return (
     <div className="bg-background font-body text-on-surface antialiased">
@@ -355,7 +408,7 @@ export default function App() {
           </div>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-on-surface-variant">
-            {[['#about','About'],['#services','Services'],['#why','Why Us'],['#contact','Contact']].map(([href,label]) => (
+            {navLinks.map(([href, label]) => (
               <a key={href} href={href} className="hover:text-primary transition-colors">{label}</a>
             ))}
           </div>
@@ -365,11 +418,49 @@ export default function App() {
               <span className="material-symbols-outlined icon-filled text-primary text-[17px]">phone</span>
               (443) 559-2447
             </a>
-            <a href="#apply" className="primary-gradient text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm shadow-primary/25 hover:opacity-90 transition-all active:scale-95">
+            <a href="/brochure.pdf" download
+              className="hidden md:flex items-center gap-1.5 text-on-surface-variant text-sm font-medium hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-[17px]">download</span>
+              Brochure
+            </a>
+            <a href="#apply"
+              className="primary-gradient text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm shadow-primary/25 hover:opacity-90 transition-all active:scale-95">
               Get Started
             </a>
+            <button onClick={() => setMenuOpen(o => !o)}
+              className="md:hidden p-1.5 rounded-lg hover:bg-surface-container transition-colors" aria-label="Toggle menu">
+              <span className="material-symbols-outlined text-on-surface text-[24px]">
+                {menuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-background border-t border-outline-variant/20 px-4 pb-4">
+            <div className="pt-2 space-y-0.5">
+              {navLinks.map(([href, label]) => (
+                <a key={href} href={href} onClick={() => setMenuOpen(false)}
+                  className="flex items-center py-2.5 px-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-fixed/30 transition-all">
+                  {label}
+                </a>
+              ))}
+            </div>
+            <div className="border-t border-outline-variant/20 mt-2 pt-2 space-y-0.5">
+              <a href="#apply" onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-bold text-primary hover:bg-primary-fixed/30 transition-all">
+                <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                Get Started
+              </a>
+              <a href="/brochure.pdf" download
+                className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-fixed/30 transition-all">
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                Download Brochure
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main>
@@ -395,16 +486,17 @@ export default function App() {
                 Connecting healthcare organizations with highly skilled professionals — ensuring seamless integration and exceptional patient care.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                <a href="#apply" className="bg-ts-gold text-on-surface font-bold px-7 py-3.5 rounded-xl hover:brightness-105 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2">
-                  Apply Now <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                <a href="#apply"
+                  className="bg-ts-gold text-on-surface font-bold px-7 py-3.5 rounded-xl hover:brightness-105 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2">
+                  Become a Caregiver <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                 </a>
                 <a href="#apply" onClick={() => setActiveTab('agency')}
                   className="border-2 border-white/25 text-white font-bold px-7 py-3.5 rounded-xl hover:bg-white/10 transition-all text-center">
-                  Request Staff
+                  Connect with Caregiver
                 </a>
               </div>
               <div className="flex flex-wrap gap-5 pt-3 border-t border-white/10">
-                {['Fully Screened Professionals', 'Rapid Placement', 'Nationwide Reach'].map(t => (
+                {['Fully Screened Professionals', 'Rapid Placement', 'Within the US'].map(t => (
                   <div key={t} className="flex items-center gap-1.5 text-white/60 text-sm">
                     <span className="material-symbols-outlined icon-filled text-primary-fixed-dim text-[15px]">check_circle</span>{t}
                   </div>
@@ -415,7 +507,7 @@ export default function App() {
             <div className="hidden lg:flex items-center justify-center py-8">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full" style={{ height: 400 }}>
                 <img
-                  src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80&auto=format&fit=crop"
                   alt="Tender Smiles healthcare professionals"
                   className="w-full h-full object-cover object-center"
                 />
@@ -425,7 +517,7 @@ export default function App() {
                     <span className="material-symbols-outlined text-on-surface icon-filled text-[17px]">groups</span>
                   </div>
                   <div>
-                    <p className="text-on-surface font-bold text-sm">Local Service. Nationwide Reach.</p>
+                    <p className="text-on-surface font-bold text-sm">Local Service. Within the US.</p>
                     <p className="text-on-surface-variant text-xs">Serving healthcare facilities across the US</p>
                   </div>
                 </div>
@@ -456,7 +548,7 @@ export default function App() {
             <div className="relative">
               <div className="absolute -top-6 -left-6 w-40 h-40 rounded-full bg-primary-fixed/50 blur-3xl pointer-events-none" />
               <img
-                src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop"
                 alt="Tender Smiles nursing team"
                 className="relative rounded-2xl shadow-[0_16px_48px_-8px_rgba(83,44,216,0.18)] w-full object-cover aspect-[4/3]"
               />
@@ -517,7 +609,7 @@ export default function App() {
 
             <div className="mt-8 primary-gradient rounded-2xl p-8 text-center text-white relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.07)_0%,_transparent_70%)] pointer-events-none" />
-              <h3 className="text-2xl md:text-3xl font-headline font-extrabold mb-3 relative z-10">Local Service. Nationwide Reach.</h3>
+              <h3 className="text-2xl md:text-3xl font-headline font-extrabold mb-3 relative z-10">Local Service. Within the US.</h3>
               <p className="text-white/80 max-w-2xl mx-auto text-sm leading-relaxed relative z-10">
                 At Tender Smiles Healthcare Staffing, our commitment to excellence and a personalized approach sets us apart. Choose us as your staffing partner and experience the benefits of a tailored solution that meets your facility's needs, drives efficiency, and elevates the quality of patient care.
               </p>
@@ -584,7 +676,7 @@ export default function App() {
               </div>
 
               <img
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1584820927498-cad076eee68c?w=800&q=80&auto=format&fit=crop"
                 alt="Smiling healthcare professional"
                 className="w-full rounded-xl object-cover shadow-sm"
                 style={{ height: 180 }}
@@ -599,18 +691,27 @@ export default function App() {
             <h3 className="text-center text-white font-headline font-extrabold text-xl mb-8">Get In Touch With Us</h3>
             <div className="grid sm:grid-cols-3 gap-6">
               {[
-                { icon: 'phone',       label: 'Call Us',    value: '(443) 559-2447',                         href: 'tel:4435592447' },
-                { icon: 'mail',        label: 'Email Us',   value: 'info@tendersmileshealthcarestaffing.com', href: 'mailto:info@tendersmileshealthcarestaffing.com' },
-                { icon: 'location_on', label: 'Our Office', value: '1102 Hartland Road, Suite I, Essex, MD 21221', href: null },
+                { icon: 'phone',       label: 'Call Us',    value: '(443) 559-2447',                              href: 'tel:4435592447',                                        whatsapp: 'https://wa.me/14435592447' },
+                { icon: 'mail',        label: 'Email Us',   value: 'info@tendersmileshealthcarestaffing.com',      href: 'mailto:info@tendersmileshealthcarestaffing.com',        whatsapp: null },
+                { icon: 'location_on', label: 'Our Office', value: '1102 Hartland Road, Suite I, Essex, MD 21221', href: null,                                                    whatsapp: null },
               ].map(c => (
                 <div key={c.label} className="flex flex-col items-center text-center gap-2">
                   <div className="w-10 h-10 rounded-full primary-gradient flex items-center justify-center shadow-sm shadow-primary/30">
                     <span className="material-symbols-outlined text-white icon-filled text-[20px]">{c.icon}</span>
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-white/50">{c.label}</div>
-                  {c.href
-                    ? <a href={c.href} className="text-white font-semibold text-sm hover:text-primary-fixed-dim transition-colors break-all">{c.value}</a>
-                    : <p className="text-white/75 text-sm">{c.value}</p>}
+                  {c.href ? (
+                    <div className="flex items-center gap-2 flex-wrap justify-center">
+                      <a href={c.href} className="text-white font-semibold text-sm hover:text-primary-fixed-dim transition-colors break-all">{c.value}</a>
+                      {c.whatsapp && (
+                        <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+                          <WhatsAppIcon className="w-5 h-5 text-green-400 hover:text-green-300 transition-colors" />
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-white/75 text-sm">{c.value}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -631,14 +732,14 @@ export default function App() {
               </div>
               <h2 className="text-3xl font-headline font-extrabold text-on-surface mb-2">Let's Work Together</h2>
               <p className="text-on-surface-variant text-sm">
-                Whether you're a healthcare professional looking for work, or a facility seeking qualified staff — we're here to help.
+                Whether you're a healthcare professional looking for work, or a family seeking qualified care — we're here to help.
               </p>
             </div>
 
             <div className="flex gap-1.5 p-1 bg-surface-container rounded-xl mb-6 shadow-sm">
               {[
-                { id: 'candidate', icon: 'person',          label: 'Apply for a Job' },
-                { id: 'agency',    icon: 'business_center', label: 'Find Staff' },
+                { id: 'candidate', icon: 'person',          label: 'Become a Caregiver' },
+                { id: 'agency',    icon: 'business_center', label: 'Request a Caregiver' },
               ].map(t => (
                 <button key={t.id} onClick={() => setActiveTab(t.id)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
@@ -656,7 +757,7 @@ export default function App() {
               {activeTab === 'candidate' ? (
                 <>
                   <div className="mb-5">
-                    <h3 className="text-xl font-headline font-extrabold text-on-surface mb-1">Apply to Tender Smiles</h3>
+                    <h3 className="text-xl font-headline font-extrabold text-on-surface mb-1">Become a Caregiver</h3>
                     <p className="text-on-surface-variant text-sm">Send us your CV and we'll match you with the right opportunities.</p>
                   </div>
                   <CandidateForm />
@@ -664,7 +765,7 @@ export default function App() {
               ) : (
                 <>
                   <div className="mb-5">
-                    <h3 className="text-xl font-headline font-extrabold text-on-surface mb-1">Request Healthcare Staff</h3>
+                    <h3 className="text-xl font-headline font-extrabold text-on-surface mb-1">Request a Caregiver</h3>
                     <p className="text-on-surface-variant text-sm">Tell us what you need and we'll connect you with verified professionals fast.</p>
                   </div>
                   <AgencyForm />
@@ -707,7 +808,14 @@ export default function App() {
             <div>
               <h5 className="font-bold text-xs uppercase tracking-widest text-primary-fixed-dim mb-4">Contact</h5>
               <ul className="space-y-2.5 text-sm text-white/50">
-                <li><a href="tel:4435592447" className="hover:text-white transition-colors">(443) 559-2447</a></li>
+                <li>
+                  <div className="flex items-center gap-2">
+                    <a href="tel:4435592447" className="hover:text-white transition-colors">(443) 559-2447</a>
+                    <a href="https://wa.me/14435592447" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                      <WhatsAppIcon className="w-4 h-4 text-green-400 hover:text-green-300 transition-colors" />
+                    </a>
+                  </div>
+                </li>
                 <li><a href="mailto:info@tendersmileshealthcarestaffing.com" className="hover:text-white transition-colors break-all">info@tendersmileshealthcarestaffing.com</a></li>
                 <li className="leading-relaxed">1102 Hartland Road, Suite I<br />Essex, MD 21221</li>
               </ul>
