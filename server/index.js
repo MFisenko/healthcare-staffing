@@ -51,12 +51,12 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
   }
 });
 
-// Tab 2 — Agency requests staff
+// Tab 2 — Caregiver request
 app.post('/api/request-staff', async (req, res) => {
-  const { orgName, contactName, email, phone, roleType, headcount, startDate, requirements } = req.body;
+  const { firstName, lastName, address, phone, email, organisation, roleType, purpose, serviceDuration, startDate, requirements } = req.body;
 
-  if (!orgName || !contactName || !email || !roleType) {
-    return res.status(400).json({ error: 'Organisation, contact name, email and role type are required.' });
+  if (!firstName || !lastName || !email || !roleType) {
+    return res.status(400).json({ error: 'First name, last name, email and role type are required.' });
   }
 
   try {
@@ -64,15 +64,17 @@ app.post('/api/request-staff', async (req, res) => {
       from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
       to: process.env.RECIPIENT_EMAIL,
       replyTo: email,
-      subject: `Staff Request — ${orgName} (${roleType})`,
+      subject: `Caregiver Request — ${firstName} ${lastName} (${roleType})`,
       html: `
-        <h2>New staff request from agency / employer</h2>
-        <p><strong>Organisation:</strong> ${orgName}</p>
-        <p><strong>Contact:</strong> ${contactName}</p>
-        <p><strong>Email:</strong> ${email}</p>
+        <h2>New caregiver request</h2>
+        <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+        <p><strong>Address:</strong> ${address}</p>
         <p><strong>Phone:</strong> ${phone || '—'}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Organisation:</strong> ${organisation || '—'}</p>
         <p><strong>Role needed:</strong> ${roleType}</p>
-        <p><strong>Headcount:</strong> ${headcount || '—'}</p>
+        <p><strong>Purpose:</strong> ${purpose || '—'}</p>
+        <p><strong>Service duration:</strong> ${serviceDuration || '—'}</p>
         <p><strong>Start date:</strong> ${startDate || '—'}</p>
         <p><strong>Requirements:</strong> ${requirements || '—'}</p>
       `,
