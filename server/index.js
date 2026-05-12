@@ -36,12 +36,21 @@ app.post('/api/apply', upload.single('cv'), async (req, res) => {
         <p><strong>Phone:</strong> ${phone || '—'}</p>
         <p><strong>Message:</strong> ${message || '—'}</p>
       `,
-      attachments: [
-        {
-          filename: cvFile.originalname,
-          content: cvFile.buffer,
-        },
-      ],
+      attachments: [{ filename: cvFile.originalname, content: cvFile.buffer }],
+    });
+
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      to: email,
+      subject: 'We received your application — Tender Smiles Healthcare Staffing',
+      html: `
+        <p>Hi ${name},</p>
+        <p>Thank you for applying to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your application and CV and will review it shortly.</p>
+        <p>A member of our team will be in touch with you soon.</p>
+        <br/>
+        <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
+        <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>
+      `,
     });
 
     res.json({ success: true });
@@ -77,6 +86,20 @@ app.post('/api/request-staff', async (req, res) => {
         <p><strong>Service duration:</strong> ${serviceDuration || '—'}</p>
         <p><strong>Start date:</strong> ${startDate || '—'}</p>
         <p><strong>Requirements:</strong> ${requirements || '—'}</p>
+      `,
+    });
+
+    await resend.emails.send({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      to: email,
+      subject: 'We received your request — Tender Smiles Healthcare Staffing',
+      html: `
+        <p>Hi ${firstName},</p>
+        <p>Thank you for reaching out to <strong>Tender Smiles Healthcare Staffing</strong>. We have received your caregiver request and will match you with a qualified professional as soon as possible.</p>
+        <p>A member of our team will be in touch with you shortly to discuss next steps.</p>
+        <br/>
+        <p>Warm regards,<br/>Tender Smiles Healthcare Staffing Team</p>
+        <p style="color:#888;font-size:12px;">1102 Hartland Road, Suite I, Essex, MD 21221 · (443) 559-2447</p>
       `,
     });
 
