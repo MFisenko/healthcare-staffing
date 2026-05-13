@@ -692,7 +692,7 @@ export default function App() {
             <div className="grid sm:grid-cols-3 gap-6">
               {[
                 { icon: 'phone',       label: 'Call Us',    value: '(443) 559-2447',                              href: 'tel:4435592447',                                        whatsapp: 'https://wa.me/14435592447' },
-                { icon: 'mail',        label: 'Email Us',   value: 'info@tendersmileshealthcarestaffing.com',      href: 'mailto:info@tendersmileshealthcarestaffing.com',        whatsapp: null },
+                { icon: 'mail',        label: 'Email Us',   value: 'tendersmileshealthcareservices@gmail.com',      href: 'mailto:tendersmileshealthcareservices@gmail.com',        whatsapp: null },
                 { icon: 'location_on', label: 'Our Office', value: '1102 Hartland Road, Suite I, Essex, MD 21221', href: null,                                                    whatsapp: null },
               ].map(c => (
                 <div key={c.label} className="flex flex-col items-center text-center gap-2">
@@ -816,7 +816,7 @@ export default function App() {
                     </a>
                   </div>
                 </li>
-                <li><a href="mailto:info@tendersmileshealthcarestaffing.com" className="hover:text-white transition-colors break-all">info@tendersmileshealthcarestaffing.com</a></li>
+                <li><a href="mailto:tendersmileshealthcareservices@gmail.com" className="hover:text-white transition-colors break-all">tendersmileshealthcareservices@gmail.com</a></li>
                 <li className="leading-relaxed">1102 Hartland Road, Suite I<br />Essex, MD 21221</li>
               </ul>
             </div>
