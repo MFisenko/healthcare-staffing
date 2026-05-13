@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import logo from './assets/tender-smiles-logo.png';
 
 function WhatsAppIcon({ className = '' }) {
   return (
@@ -397,10 +398,8 @@ export default function App() {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-background/85 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_2px_16px_-4px_rgba(83,44,216,0.08)]">
         <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full primary-gradient flex items-center justify-center flex-shrink-0 shadow-sm shadow-primary/30">
-              <span className="material-symbols-outlined text-white icon-filled text-[16px]">favorite</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Tender Smiles Staffing Agency" className="h-10 w-auto object-contain" />
             <div className="leading-tight">
               <div className="font-headline font-extrabold text-on-surface text-[14px] leading-none">Tender Smiles</div>
               <div className="text-[9px] font-bold tracking-widest text-primary uppercase">Healthcare Staffing</div>
