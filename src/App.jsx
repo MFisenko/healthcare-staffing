@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import logo from './assets/tender-smiles-logo.png';
+import brochurePdf from './assets/Emailing Tender Smiles Healthcare Staffing Brochur_250110_101014.pdf';
 
 function WhatsAppIcon({ className = '' }) {
   return (
@@ -421,7 +422,7 @@ export default function App() {
               className="hidden sm:flex items-center justify-center text-green-400 hover:text-green-300 transition-colors">
               <WhatsAppIcon className="w-5 h-5" />
             </a>
-            <a href="/brochure.pdf" download
+            <a href={brochurePdf} target="_blank" rel="noopener noreferrer"
               className="hidden md:flex items-center gap-1.5 text-on-surface-variant text-sm font-medium hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-[17px]">download</span>
               Brochure
@@ -456,7 +457,7 @@ export default function App() {
                 <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
                 Get Started
               </a>
-              <a href="/brochure.pdf" download
+              <a href={brochurePdf} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-fixed/30 transition-all">
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Download Brochure
