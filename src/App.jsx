@@ -397,14 +397,10 @@ export default function App() {
     <div className="bg-background font-body text-on-surface antialiased">
 
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-background/85 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_2px_16px_-4px_rgba(83,44,216,0.08)]">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Tender Smiles Staffing Agency" className="h-10 w-auto object-contain" />
-            <div className="leading-tight">
-              <div className="font-headline font-extrabold text-on-surface text-[14px] leading-none">Tender Smiles</div>
-              <div className="text-[9px] font-bold tracking-widest text-primary uppercase">Healthcare Staffing</div>
-            </div>
+      <nav className="fixed top-0 w-full z-50 bg-white border-b border-outline-variant/20 shadow-[0_2px_16px_-4px_rgba(83,44,216,0.08)]">
+        <div className="max-w-6xl mx-auto px-6 flex items-stretch justify-between gap-6 h-16">
+          <div className="flex items-center">
+            <img src={logo} alt="Tender Smiles Staffing Agency" className="h-full w-auto object-contain py-1" />
           </div>
 
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-on-surface-variant">
@@ -442,7 +438,7 @@ export default function App() {
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="md:hidden bg-background border-t border-outline-variant/20 px-4 pb-4">
+          <div className="md:hidden bg-white border-t border-outline-variant/20 px-4 pb-4">
             <div className="pt-2 space-y-0.5">
               {navLinks.map(([href, label]) => (
                 <a key={href} href={href} onClick={() => setMenuOpen(false)}
