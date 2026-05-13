@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react';
+import { Analytics, track } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 const logo = '/tender-smiles-logo.png';
 const brochurePdf = '/tender-smiles-brochure.pdf';
 
@@ -11,6 +13,42 @@ function WhatsAppIcon({ className = '' }) {
 }
 
 // ─── Static data ───────────────────────────────────────────────────
+const SUCCESS_STORIES = [
+  {
+    id: 1,
+    org: 'Memorial Hospital System',
+    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&q=80&auto=format&fit=crop',
+    quote: "Tender Smiles has been a lifesaver for our emergency staffing needs. Their extensive network of qualified nurses and physicians is unmatched, and their rapid response time ensures we never compromise patient care. We are incredibly grateful for their partnership.",
+    results: [
+      'Reduced staffing shortages by 40% in 3 months',
+      'Improved patient satisfaction scores with highly skilled placements',
+      'Streamlined hiring process and reduced administrative burden',
+    ],
+  },
+  {
+    id: 2,
+    org: 'Sunrise Senior Living',
+    image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&q=80&auto=format&fit=crop',
+    quote: "We partnered with Tender Smiles to fill critical CNA positions across our facilities. The quality of candidates was exceptional and the onboarding process seamless. Our residents now receive the compassionate care they deserve every single day.",
+    results: [
+      'Filled 15 CNA positions within 2 weeks',
+      'Zero care gaps during peak holiday season',
+      'Reduced agency costs by 25% year-over-year',
+    ],
+  },
+  {
+    id: 3,
+    org: 'Chesapeake Home Health',
+    image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&q=80&auto=format&fit=crop',
+    quote: "Tender Smiles transformed how we manage our homecare staffing. Their understanding of our community's unique needs and commitment to finding the right fit has made them an invaluable long-term partner.",
+    results: [
+      'Matched with specialized homecare professionals in under 24 hours',
+      'Client satisfaction scores increased by 35%',
+      'Expanded service coverage to 3 new counties',
+    ],
+  },
+];
+
 const SERVICES = [
   { icon: 'schedule',            title: 'Temporary Staffing',    accent: 'bg-primary-fixed text-primary',     body: 'When unexpected staffing gaps arise, trust Tender Smiles Healthcare Staffing to provide the right professionals at the right time.' },
   { icon: 'handshake',           title: 'Direct Hire Placement', accent: 'bg-secondary-fixed text-secondary', body: "We carefully match candidates with your organization's values and culture, ensuring they seamlessly integrate into your team." },
@@ -185,6 +223,7 @@ function CandidateForm() {
       const res  = await fetch('/api/apply', { method: 'POST', body: data });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Something went wrong. Please try again.');
+      track('candidate_apply');
       setStatus(STATES.success);
     } catch (err) { setServerErr(err.message); setStatus(STATES.error); }
   }
@@ -301,6 +340,7 @@ function AgencyForm() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Something went wrong. Please try again.');
+      track('agency_request', { roleType: form.roleType });
       setStatus(STATES.success);
     } catch (err) { setServerErr(err.message); setStatus(STATES.error); }
   }
@@ -386,6 +426,102 @@ function AgencyForm() {
   );
 }
 
+// ─── Success stories carousel ──────────────────────────────────────
+function SuccessStoriesCarousel() {
+  const [active, setActive] = useState(0);
+  const trackRef = useRef(null);
+  const total = SUCCESS_STORIES.length;
+
+  const scrollTo = (idx) => {
+    if (idx < 0 || idx >= total) return;
+    setActive(idx);
+    const cards = trackRef.current?.children;
+    if (cards?.[idx]) {
+      cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  };
+
+  return (
+    <section id="about" className="py-16 bg-surface-container-low border-b border-outline-variant/20">
+      <div className="text-center max-w-2xl mx-auto px-6 mb-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest mb-3">
+          <span className="material-symbols-outlined icon-filled text-[13px]">workspace_premium</span>
+          Success Stories
+        </div>
+        <h2 className="text-3xl font-headline font-extrabold text-on-surface">Trusted by Healthcare Leaders</h2>
+      </div>
+
+      <div className="relative overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {SUCCESS_STORIES.map((story, i) => (
+            <div
+              key={story.id}
+              className="snap-center flex-shrink-0 bg-white rounded-3xl shadow-lg overflow-hidden"
+              style={{
+                width: '72%',
+                marginLeft:  i === 0         ? '14%' : 0,
+                marginRight: i === total - 1 ? '14%' : 0,
+              }}
+            >
+              <div className="flex flex-col sm:flex-row sm:h-[420px]">
+                <img
+                  src={story.image}
+                  alt={story.org}
+                  className="hidden sm:block sm:w-[38%] h-full object-cover object-top flex-shrink-0"
+                />
+                <div className="flex-1 p-7 sm:p-10 flex flex-col justify-center">
+                  <span className="inline-block bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5 w-fit">
+                    Success Story
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-headline font-extrabold text-on-surface mb-3">{story.org}</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed mb-5">{story.quote}</p>
+                  <ul className="space-y-2.5">
+                    {story.results.map(r => (
+                      <li key={r} className="flex items-start gap-2.5 text-sm text-on-surface">
+                        <span className="flex-shrink-0">⭐</span>
+                        <span>{r}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scrollTo(active - 1)}
+          disabled={active === 0}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <span className="material-symbols-outlined text-[24px]">chevron_left</span>
+        </button>
+        <button
+          onClick={() => scrollTo(active + 1)}
+          disabled={active === total - 1}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <span className="material-symbols-outlined text-[24px]">chevron_right</span>
+        </button>
+      </div>
+
+      <div className="flex justify-center gap-2 mt-7">
+        {SUCCESS_STORIES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollTo(i)}
+            className={`h-2 rounded-full transition-all duration-300 ${i === active ? 'w-6 bg-primary' : 'w-2 bg-outline-variant'}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ─── Page ──────────────────────────────────────────────────────────
 export default function App() {
   const [activeTab, setActiveTab] = useState('candidate');
@@ -410,15 +546,18 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="tel:4435592447" className="hidden sm:flex items-center gap-1.5 text-on-surface text-sm font-bold hover:text-primary transition-colors">
+            <a href="tel:4435592447" onClick={() => track('phone_click', { location: 'navbar' })}
+              className="hidden sm:flex items-center gap-1.5 text-on-surface text-sm font-bold hover:text-primary transition-colors">
               <span className="material-symbols-outlined icon-filled text-primary text-[17px]">phone</span>
               (443) 559-2447
             </a>
             <a href="https://wa.me/14435592447" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"
+              onClick={() => track('whatsapp_click', { location: 'navbar' })}
               className="hidden sm:flex items-center justify-center text-green-400 hover:text-green-300 transition-colors">
               <WhatsAppIcon className="w-5 h-5" />
             </a>
             <a href={brochurePdf} target="_blank" rel="noopener noreferrer"
+              onClick={() => track('brochure_download', { location: 'navbar' })}
               className="hidden md:flex items-center gap-1.5 text-on-surface-variant text-sm font-medium hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-[17px]">download</span>
               Brochure
@@ -454,6 +593,7 @@ export default function App() {
                 Get Started
               </a>
               <a href={brochurePdf} target="_blank" rel="noopener noreferrer"
+                onClick={() => track('brochure_download', { location: 'mobile_menu' })}
                 className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-fixed/30 transition-all">
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Download Brochure
@@ -486,11 +626,11 @@ export default function App() {
                 Connecting healthcare organizations with highly skilled professionals — ensuring seamless integration and exceptional patient care.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                <a href="#apply"
+                <a href="#apply" onClick={() => track('cta_click', { label: 'become_caregiver', location: 'hero' })}
                   className="bg-ts-gold text-on-surface font-bold px-7 py-3.5 rounded-xl hover:brightness-105 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2">
                   Become a Caregiver <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                 </a>
-                <a href="#apply" onClick={() => setActiveTab('agency')}
+                <a href="#apply" onClick={() => { setActiveTab('agency'); track('cta_click', { label: 'connect_with_caregiver', location: 'hero' }); }}
                   className="border-2 border-white/25 text-white font-bold px-7 py-3.5 rounded-xl hover:bg-white/10 transition-all text-center">
                   Connect with Caregiver
                 </a>
@@ -542,44 +682,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* About */}
-        <section id="about" className="py-16 px-6">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <div className="absolute -top-6 -left-6 w-40 h-40 rounded-full bg-primary-fixed/50 blur-3xl pointer-events-none" />
-              <img
-                src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop"
-                alt="Tender Smiles nursing team"
-                className="relative rounded-2xl shadow-[0_16px_48px_-8px_rgba(83,44,216,0.18)] w-full object-cover aspect-[4/3]"
-              />
-              <div className="absolute -bottom-4 -right-4 primary-gradient rounded-xl px-4 py-3 shadow-lg text-center">
-                <div className="text-xl font-headline font-extrabold text-white">24/7</div>
-                <div className="text-[10px] font-bold text-white/80 uppercase tracking-wide">Day Services</div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest">
-                <span className="material-symbols-outlined icon-filled text-[13px]">info</span>About Us
-              </div>
-              <h2 className="text-3xl font-headline font-extrabold text-on-surface leading-tight">About Tender Smiles</h2>
-              <p className="text-on-surface-variant leading-relaxed">
-                At Tender Smiles Healthcare Staffing, we are dedicated to revolutionizing the way healthcare organizations find their perfect staffing solutions.
-              </p>
-              <p className="text-on-surface-variant leading-relaxed">
-                Our mission is to connect you with top-tier professionals who not only possess the necessary qualifications but also seamlessly integrate into your facility's culture.
-              </p>
-              <div className="space-y-2.5 pt-1">
-                {['Extensive Network of Highly Qualified Professionals', 'Rapid Response to Staffing Needs', 'Trusted and Reliable Partner'].map(item => (
-                  <div key={item} className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined icon-filled text-ts-gold flex-shrink-0 text-[18px]">star</span>
-                    <span className="text-on-surface font-medium text-sm">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        <SuccessStoriesCarousel />
 
         {/* Services */}
         <section id="services" className="py-16 bg-surface-container-low border-y border-outline-variant/20">
@@ -702,9 +805,12 @@ export default function App() {
                   <div className="text-[10px] font-bold uppercase tracking-widest text-white/50">{c.label}</div>
                   {c.href ? (
                     <div className="flex items-center gap-2 flex-wrap justify-center">
-                      <a href={c.href} className="text-white font-semibold text-sm hover:text-primary-fixed-dim transition-colors break-all">{c.value}</a>
+                      <a href={c.href}
+                        onClick={() => c.href.startsWith('tel:') && track('phone_click', { location: 'contact_section' })}
+                        className="text-white font-semibold text-sm hover:text-primary-fixed-dim transition-colors break-all">{c.value}</a>
                       {c.whatsapp && (
-                        <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+                        <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"
+                          onClick={() => track('whatsapp_click', { location: 'contact_section' })}>
                           <WhatsAppIcon className="w-5 h-5 text-green-400 hover:text-green-300 transition-colors" />
                         </a>
                       )}
@@ -810,8 +916,9 @@ export default function App() {
               <ul className="space-y-2.5 text-sm text-white/50">
                 <li>
                   <div className="flex items-center gap-2">
-                    <a href="tel:4435592447" className="hover:text-white transition-colors">(443) 559-2447</a>
-                    <a href="https://wa.me/14435592447" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                    <a href="tel:4435592447" onClick={() => track('phone_click', { location: 'footer' })} className="hover:text-white transition-colors">(443) 559-2447</a>
+                    <a href="https://wa.me/14435592447" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
+                      onClick={() => track('whatsapp_click', { location: 'footer' })}>
                       <WhatsAppIcon className="w-4 h-4 text-green-400 hover:text-green-300 transition-colors" />
                     </a>
                   </div>
@@ -826,6 +933,8 @@ export default function App() {
           </div>
         </div>
       </footer>
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
