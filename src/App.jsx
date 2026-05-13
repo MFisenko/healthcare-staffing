@@ -471,9 +471,9 @@ function SuccessStoriesCarousel() {
                 <img
                   src={story.image}
                   alt={story.org}
-                  className="hidden sm:block sm:w-[38%] h-full object-cover object-top flex-shrink-0"
+                  className="w-full h-52 flex-shrink-0 object-cover object-top sm:w-[38%] sm:h-full"
                 />
-                <div className="flex-1 p-7 sm:p-10 flex flex-col justify-center">
+                <div className="flex-1 p-6 sm:p-10 flex flex-col justify-center">
                   <span className="inline-block bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5 w-fit">
                     Success Story
                   </span>
