@@ -418,6 +418,10 @@ export default function App() {
               <span className="material-symbols-outlined icon-filled text-primary text-[17px]">phone</span>
               (443) 559-2447
             </a>
+            <a href="https://wa.me/14435592447" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"
+              className="hidden sm:flex items-center justify-center text-green-400 hover:text-green-300 transition-colors">
+              <WhatsAppIcon className="w-5 h-5" />
+            </a>
             <a href="/brochure.pdf" download
               className="hidden md:flex items-center gap-1.5 text-on-surface-variant text-sm font-medium hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-[17px]">download</span>
