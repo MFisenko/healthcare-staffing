@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import logo from './assets/tender-smiles-logo.png';
-import brochurePdf from './assets/Emailing Tender Smiles Healthcare Staffing Brochur_250110_101014.pdf';
+const logo = '/tender-smiles-logo.png';
+const brochurePdf = '/tender-smiles-brochure.pdf';
 
 function WhatsAppIcon({ className = '' }) {
   return (
